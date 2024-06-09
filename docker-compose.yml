@@ -72,7 +72,7 @@ services:
         - ASPNETCORE_HTTPS_PORT=7121
         - ASPNETCORE_Kestrel__Certificates__Default__Password=HarmonyTeamsSecretKey 
         - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/batasharmony.pfx
-        - AppEndpointConfiguration__HarmonyApiEndpoint=https://harmony.api:443/
+        - AppEndpointConfiguration__HarmonyApiEndpoint=https://harmony-api:443/
         - BrokerConfiguration__Host=harmony-rabbitmq 
         - ConnectionStrings__HarmonyJobsConnection=Host=harmony-postgres;Database=Harmony.Notifications.Jobs;Username=postgres;Password=%HarmonyTeams100
         # - ElasticConfiguration:Uri=http://elasticsearch:9200
