@@ -5,84 +5,94 @@ services:
         context: .
         dockerfile: src/Services/Harmony.Api/Dockerfile
         args:
-          BUILD_CONFIGURATION: Debug
+          BUILD_CONFIGURATION: Release
     container_name: harmony-api
     ports:
         - "7097:443"
     restart: always
     environment:
-        - ASPNETCORE_ENVIRONMENT=Development
+        - ASPNETCORE_ENVIRONMENT=Production
         - ASPNETCORE_URLS=https://+:443;http://+:80
         - ASPNETCORE_HTTPS_PORT=7097
         - ASPNETCORE_Kestrel__Certificates__Default__Password=HarmonyTeamsSecretKey 
-        - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/harmony.pfx 
-        - ConnectionStrings__HarmonyConnection=Server=harmony-sql-server;database=harmony;User Id=sa;Password=%HarmonyTeams100;TrustServerCertificate=True
+        - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/batasharmony.pfx 
+        - ConnectionStrings__HarmonyConnection=Host=harmony-postgres;Database=Harmony;Username=postgres;Password=%HarmonyTeams100
         - AppEndpointConfiguration__AutomationEndpoint=https://harmony-automations:443/
         - BrokerConfiguration__Host=harmony-rabbitmq
-        - ElasticConfiguration:Uri=http://elasticsearch:9200
+        # - ElasticConfiguration:Uri=http://elasticsearch:9200
     volumes:
-        - $USERPROFILE/.aspnet/https:/https/
+        - /apps/harmony/https:/https:ro
+        - /apps/harmony/Files:/app/Files/
     depends_on:
-        - sql_server
+        - postgres
         - rabbitmq
+        - redis
    automations:
     build: 
         context: .
         dockerfile: src/Services/Harmony.Automations/Dockerfile
         args:
-          BUILD_CONFIGURATION: Debug
+          BUILD_CONFIGURATION: Release
     container_name: harmony-automations
     ports:
         - "7277:443"
     restart: always
     environment:
-        - ASPNETCORE_ENVIRONMENT=Development
+        - ASPNETCORE_ENVIRONMENT=Production
         - ASPNETCORE_URLS=https://+:443;http://+:80
         - ASPNETCORE_HTTPS_PORT=7277
         - ASPNETCORE_Kestrel__Certificates__Default__Password=HarmonyTeamsSecretKey 
-        - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/harmony.pfx
+        - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/batasharmony.pfx
         - AppEndpointConfiguration__HarmonyApiEndpoint=https://harmony-api:443/
         - BrokerConfiguration__Host=harmony-rabbitmq 
-        - ConnectionStrings__HarmonyJobsConnection=Server=harmony-sql-server;database=Harmony.Automations.Jobs;User Id=sa;Password=%HarmonyTeams100;TrustServerCertificate=True
+        - ConnectionStrings__HarmonyJobsConnection=Host=harmony-postgres;Database=Harmony.Automations.Jobs;Username=postgres;Password=%HarmonyTeams100
         - MongoDB__ConnectionURI=mongodb://harmony-mongodb-server:27017
-        - ElasticConfiguration:Uri=http://elasticsearch:9200
+        # - ElasticConfiguration:Uri=http://elasticsearch:9200
+        - RedisConnectionString=harmony-redis:6379
     volumes:
-        - $USERPROFILE/.aspnet/https:/https/
+        - /apps/harmony/https:/https:ro
     depends_on:
-        - sql_server
+        - postgres
         - rabbitmq
         - mongodb
+        - redis
    notifications:
     build: 
         context: .
         dockerfile: src/Services/Harmony.Notifications/Dockerfile
         args:
-          BUILD_CONFIGURATION: Debug
+          BUILD_CONFIGURATION: Release
     container_name: harmony-notifications
     ports:
         - "7121:443"
     restart: always
     environment:
-        - ASPNETCORE_ENVIRONMENT=Development
+        - ASPNETCORE_ENVIRONMENT=Production
         - ASPNETCORE_URLS=https://+:443;http://+:80
         - ASPNETCORE_HTTPS_PORT=7121
         - ASPNETCORE_Kestrel__Certificates__Default__Password=HarmonyTeamsSecretKey 
-        - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/harmony.pfx
+        - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/batasharmony.pfx
         - AppEndpointConfiguration__HarmonyApiEndpoint=https://harmony.api:443/
         - BrokerConfiguration__Host=harmony-rabbitmq 
-        - ConnectionStrings__HarmonyJobsConnection=Server=harmony-sql-server;database=Harmony.Notifications.Jobs;User Id=sa;Password=%HarmonyTeams100;TrustServerCertificate=True
-        - ElasticConfiguration:Uri=http://elasticsearch:9200
+        - ConnectionStrings__HarmonyJobsConnection=Host=harmony-postgres;Database=Harmony.Notifications.Jobs;Username=postgres;Password=%HarmonyTeams100
+        # - ElasticConfiguration:Uri=http://elasticsearch:9200
+        - GmailSettings:From=info@batas.co.id
+        - GmailSettings:SmtpServer=smtp.zoho.com
+        - GmailSettings:Port=587
+        - GmailSettings:UserName=info@batas.co.id
+        - GmailSettings:Password=Info@batas123
+        - GmailSettings:DisplayName=Harmony-Batas
     volumes:
-        - $USERPROFILE/.aspnet/https:/https/
+        - /apps/harmony/https:/https:ro
     depends_on:
-        - sql_server
+        - postgres
         - rabbitmq
    signalr:
     build: 
         context: .
         dockerfile: src/Services/Harmony.SignalR/Dockerfile
         args:
-          BUILD_CONFIGURATION: Debug
+          BUILD_CONFIGURATION: Release
     container_name: harmony-signalr
     ports:
         - "7262:443"
@@ -92,10 +102,10 @@ services:
         - ASPNETCORE_HTTPS_PORT=7262
         - BrokerConfiguration__Host=harmony-rabbitmq
         - ASPNETCORE_Kestrel__Certificates__Default__Password=HarmonyTeamsSecretKey 
-        - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/harmony.pfx
-        - ElasticConfiguration:Uri=http://elasticsearch:9200
+        - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/batasharmony.pfx
+        # - ElasticConfiguration:Uri=http://elasticsearch:9200
     volumes:
-        - $USERPROFILE/.aspnet/https:/https/
+        - /apps/harmony/https:/https:ro
     depends_on:
         - rabbitmq
    integrations-sourcecontrol:
@@ -113,11 +123,11 @@ services:
         - ASPNETCORE_HTTPS_PORT=7113
         - BrokerConfiguration__Host=harmony-rabbitmq
         - ASPNETCORE_Kestrel__Certificates__Default__Password=HarmonyTeamsSecretKey 
-        - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/harmony.pfx
+        - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/batasharmony.pfx
         - MongoDB__ConnectionURI=mongodb://harmony-mongodb-server:27017
-        - ElasticConfiguration:Uri=http://elasticsearch:9200
+        # - ElasticConfiguration:Uri=http://elasticsearch:9200
     volumes:
-        - $USERPROFILE/.aspnet/https:/https/
+        - /apps/harmony/https:/https:ro
     depends_on:
         - rabbitmq
         - mongodb
@@ -126,18 +136,18 @@ services:
         context: .
         dockerfile: src/Web/Harmony.Client/Dockerfile
         args:
-          BUILD_CONFIGURATION: Debug
+          BUILD_CONFIGURATION: Release
     container_name: harmony-client
     ports:
-        - "7096:80"
+        - "7100:80"
     environment:
-        - ASPNETCORE_ENVIRONMENT=Development
+        - ASPNETCORE_ENVIRONMENT=Production
         - ASPNETCORE_URLS=https://+:443;http://+:80
-        - ASPNETCORE_HTTPS_PORT=7096
+        - ASPNETCORE_HTTPS_PORT=7100
         - ASPNETCORE_Kestrel__Certificates__Default__Password=HarmonyTeamsSecretKey 
-        - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/harmony.pfx 
+        - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/batasharmony.pfx 
     volumes:
-        - $USERPROFILE/.aspnet/https:/https/
+        - /apps/harmony/https:/https:ro
     depends_on:
         - signalr
         - api
@@ -147,47 +157,71 @@ services:
         context: .
         dockerfile: src/ApiGateways/Harmony.ApiGateway/Dockerfile
         args:
-          BUILD_CONFIGURATION: Debug
+          BUILD_CONFIGURATION: Release
     container_name: harmony-apigateway
     ports:
         - "7108:443"
     restart: always
     environment:
-        - ASPNETCORE_ENVIRONMENT=Development
+        - ASPNETCORE_ENVIRONMENT=Production
         - ASPNETCORE_URLS=https://+:443;http://+:80
         - ASPNETCORE_HTTPS_PORT=7108
         - ASPNETCORE_Kestrel__Certificates__Default__Password=HarmonyTeamsSecretKey 
-        - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/harmony.pfx 
+        - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/batasharmony.pfx 
     volumes:
-        - $USERPROFILE/.aspnet/https:/https/
-   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.18
-    container_name: elasticsearch
-    environment:
-        - xpack.monitoring.enabled=true
-        - xpack.watcher.enabled=false
-        - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-        - discovery.type=single-node
-    ports:
-        - "9200:9200"
-   kibana:
-    image: docker.elastic.co/kibana/kibana:7.17.18
-    container_name: kibana
-    environment:
-        - ELASTICSEARCH_URL=http://elasticsearch:9200
-    depends_on:
-        - elasticsearch
-    ports:
-        - "5601:5601" 
+        - /apps/harmony/https:/https:ro
+#    elasticsearch:
+#     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.18
+#     container_name: elasticsearch
+#     environment:
+#         - xpack.monitoring.enabled=true
+#         - xpack.watcher.enabled=false
+#         - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+#         - discovery.type=single-node
+#     ports:
+#         - "9200:9200"
+#    kibana:
+#     image: docker.elastic.co/kibana/kibana:7.17.18
+#     container_name: kibana
+#     environment:
+#         - ELASTICSEARCH_URL=http://elasticsearch:9200
+#     depends_on:
+#         - elasticsearch
+#     ports:
+#         - "5601:5601" 
+   redis:
+    image: redis/redis-stack-server:latest
+    container_name: harmony-redis
    rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: harmony-rabbitmq
-   sql_server:
-    image: "mcr.microsoft.com/mssql/server:2022-latest"
-    container_name: harmony-sql-server
+   postgres:
+    image: "postgres"
+    container_name: harmony-postgres
     environment:
-      - ACCEPT_EULA=y
-      - SA_PASSWORD=%HarmonyTeams100
+      - POSTGRES_PASSWORD=%HarmonyTeams100
+      - POSTGRES_USER=postgres
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+        - "5432:5432"
+    volumes:
+      - ~/Documents/Workingspace/Databases/postgres/data:/var/lib/postgresql/data
+#    sql_server:
+#     image: "mcr.microsoft.com/mssql/server:2022-latest"
+#     container_name: harmony-postgres
+#     environment:
+#       - ACCEPT_EULA=y
+#       - SA_PASSWORD=%HarmonyTeams100
+#     ports:
+#         - "1433:1433"
+#     volumes:
+#       - ~/Documents/Workingspace/Databases/sqlserver/data:/var/opt/mssql/data
+#       - ~/Documents/Workingspace/Databases/sqlserver/log:/var/opt/mssql/log
+#       - ~/Documents/Workingspace/Databases/sqlserver/secrets:/var/opt/mssql/secrets
+#     #volumes:
+#     #  - /apps/batas/harmony/database/data:/var/opt/mssql/data
+#     #  - /apps/batas/harmony/database/log:/var/opt/mssql/log
+#     #  - /apps/batas/harmony/database/secrets:/var/opt/mssql/secrets
    mongodb:
     image: mongo:latest
     container_name: harmony-mongodb-server
