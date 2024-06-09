@@ -21,7 +21,7 @@ services:
         - BrokerConfiguration__Host=harmony-rabbitmq
         # - ElasticConfiguration:Uri=http://elasticsearch:9200
     volumes:
-        - ~/.aspnet/https:/https:ro
+        - /apps/harmony/https:/https:ro
         - /apps/harmony/Files:/app/Files/
     depends_on:
         - postgres
@@ -50,7 +50,7 @@ services:
         # - ElasticConfiguration:Uri=http://elasticsearch:9200
         - RedisConnectionString=harmony-redis:6379
     volumes:
-        - ~/.aspnet/https:/https:ro
+        - /apps/harmony/https:/https:ro
     depends_on:
         - postgres
         - rabbitmq
@@ -83,7 +83,7 @@ services:
         - GmailSettings:Password=Info@batas123
         - GmailSettings:DisplayName=Harmony-Batas
     volumes:
-        - ~/.aspnet/https:/https:ro
+        - /apps/harmony/https:/https:ro
     depends_on:
         - postgres
         - rabbitmq
@@ -105,7 +105,7 @@ services:
         - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/batasharmony.pfx
         # - ElasticConfiguration:Uri=http://elasticsearch:9200
     volumes:
-        - ~/.aspnet/https:/https:ro
+        - /apps/harmony/https:/https:ro
     depends_on:
         - rabbitmq
    integrations-sourcecontrol:
@@ -127,7 +127,7 @@ services:
         - MongoDB__ConnectionURI=mongodb://harmony-mongodb-server:27017
         # - ElasticConfiguration:Uri=http://elasticsearch:9200
     volumes:
-        - ~/.aspnet/https:/https:ro
+        - /apps/harmony/https:/https:ro
     depends_on:
         - rabbitmq
         - mongodb
@@ -147,7 +147,7 @@ services:
         - ASPNETCORE_Kestrel__Certificates__Default__Password=HarmonyTeamsSecretKey 
         - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/batasharmony.pfx 
     volumes:
-        - ~/.aspnet/https:/https:ro
+        - /apps/harmony/https:/https:ro
     depends_on:
         - signalr
         - api
@@ -169,7 +169,7 @@ services:
         - ASPNETCORE_Kestrel__Certificates__Default__Password=HarmonyTeamsSecretKey 
         - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/batasharmony.pfx 
     volumes:
-        - ~/.aspnet/https:/https:ro
+        - /apps/harmony/https:/https:ro
 #    elasticsearch:
 #     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.18
 #     container_name: elasticsearch
